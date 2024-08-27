@@ -33,6 +33,8 @@ public class SuperGridEditor : Editor
         {
             if (EditorUtility.DisplayDialog("Safety Check!", "Do you want to reset the SuperGrid?", "Yes", "No"))
             {
+                _superGrid.ClearGrid();
+
                 _superGrid.Initialize();
 
                 MarkSceneAsDirty();
