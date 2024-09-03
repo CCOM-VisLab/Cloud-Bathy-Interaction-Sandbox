@@ -351,7 +351,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_MaterialPropertyBlockHelper: {fileID: 1924168289771518326}
-  m_ColorPropertyName: _BaseColor
+  m_ColorPropertyName: _Color
 --- !u!1 &9070405334167681302
 GameObject:
   m_ObjectHideFlags: 0
