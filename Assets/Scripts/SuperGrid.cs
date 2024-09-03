@@ -9,7 +9,10 @@ public class SuperGrid : MonoBehaviour
     public GameObject superGridCellPrefab;
 
     [SerializeField]
-    Material UNASSIGNED, ASSIGNED, INSPECTED, QC_ASSIGNED, COMPLETE;
+    Shader gridCellShader;
+
+    [SerializeField]
+    Color UNASSIGNED, ASSIGNED, INSPECTED, QC_ASSIGNED, COMPLETE;
 
     private  GameObject[,] _superGridCells;
 
@@ -20,8 +23,12 @@ public class SuperGrid : MonoBehaviour
 
     public Actions action;
 
-    Dictionary<SuperGridCellProperties.SurveyStatus, Material> statusMaterials = new();
+    Dictionary<SuperGridCellProperties.SurveyStatus, Material> statusMaterials;
 
+    private void Awake()
+    {
+        if (statusMaterials == null) CreateMaterials();
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -39,6 +46,8 @@ public class SuperGrid : MonoBehaviour
         _superGridCells = new GameObject[width, height];
 
         GameObject prefabSGC = superGridCellPrefab;
+
+        if (statusMaterials == null || statusMaterials.Count == 0) CreateMaterials();
 
         for (int i = 0; i < width; ++i)
         {
@@ -62,11 +71,11 @@ public class SuperGrid : MonoBehaviour
                 newCell.transform.localPosition = new Vector3(i, j, props.zEstimate);
                 newCell.transform.localScale = Vector3.one * 0.9f;
 
-                if (props.status == SuperGridCellProperties.SurveyStatus.UNASSIGNED) newCell.GetComponentInChildren<MeshRenderer>().material = UNASSIGNED;
-                if (props.status == SuperGridCellProperties.SurveyStatus.ASSIGNED) newCell.GetComponentInChildren<MeshRenderer>().material = ASSIGNED;
-                if (props.status == SuperGridCellProperties.SurveyStatus.INSPECTED) newCell.GetComponentInChildren<MeshRenderer>().material = INSPECTED;
-                if (props.status == SuperGridCellProperties.SurveyStatus.QC_ASSIGNED) newCell.GetComponentInChildren<MeshRenderer>().material = QC_ASSIGNED;
-                if (props.status == SuperGridCellProperties.SurveyStatus.COMPLETE) newCell.GetComponentInChildren<MeshRenderer>().material = COMPLETE;
+                if (props.status == SuperGridCellProperties.SurveyStatus.UNASSIGNED) newCell.GetComponentInChildren<MeshRenderer>().material = statusMaterials[SuperGridCellProperties.SurveyStatus.UNASSIGNED];
+                if (props.status == SuperGridCellProperties.SurveyStatus.ASSIGNED) newCell.GetComponentInChildren<MeshRenderer>().material = statusMaterials[SuperGridCellProperties.SurveyStatus.ASSIGNED];
+                if (props.status == SuperGridCellProperties.SurveyStatus.INSPECTED) newCell.GetComponentInChildren<MeshRenderer>().material = statusMaterials[SuperGridCellProperties.SurveyStatus.INSPECTED];
+                if (props.status == SuperGridCellProperties.SurveyStatus.QC_ASSIGNED) newCell.GetComponentInChildren<MeshRenderer>().material = statusMaterials[SuperGridCellProperties.SurveyStatus.QC_ASSIGNED];
+                if (props.status == SuperGridCellProperties.SurveyStatus.COMPLETE) newCell.GetComponentInChildren<MeshRenderer>().material = statusMaterials[SuperGridCellProperties.SurveyStatus.COMPLETE];
 
                 _superGridCells[i, j] = newCell;
             }
@@ -81,5 +90,17 @@ public class SuperGrid : MonoBehaviour
         }
 
         _superGridCells = null;
+    }
+
+    void CreateMaterials()
+    {
+        statusMaterials = new()
+        {
+            [SuperGridCellProperties.SurveyStatus.UNASSIGNED] = new Material(gridCellShader) { color = UNASSIGNED, name = "UNASSIGNED" },
+            [SuperGridCellProperties.SurveyStatus.ASSIGNED] = new Material(gridCellShader) { color = ASSIGNED, name = "ASSIGNED" },
+            [SuperGridCellProperties.SurveyStatus.INSPECTED] = new Material(gridCellShader) { color = INSPECTED, name = "INSPECTED" },
+            [SuperGridCellProperties.SurveyStatus.QC_ASSIGNED] = new Material(gridCellShader) { color = QC_ASSIGNED, name = "QC_ASSIGNED" },
+            [SuperGridCellProperties.SurveyStatus.COMPLETE] = new Material(gridCellShader) { color = COMPLETE, name = "COMPLETE" }
+        };
     }
 }
